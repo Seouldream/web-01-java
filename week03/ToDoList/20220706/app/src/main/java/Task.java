@@ -1,11 +1,9 @@
-import javax.swing.*;
-
 public class Task {
 
 
 
+  public String getTaskText(String todoContent) {
 
-  public String getText() {
-    return textField.get;
+    return todoContent;
   }
 }

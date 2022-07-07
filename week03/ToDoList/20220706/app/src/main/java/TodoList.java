@@ -1,8 +1,5 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
-import java.util.List;
 
 public class TodoList {
   private JFrame frame;
@@ -12,7 +9,9 @@ public class TodoList {
 
   private Task task;
   private TaskRepository taskRepository;
-  private JTextField textField;
+
+
+  private ManageAddTodoSection manageAddTodoSection;
 
 
   public static void main(String[] args) {
@@ -29,10 +28,11 @@ public class TodoList {
       createBackgroundPanel();
       //메인 제목 레이블
       createTitleLabel();
-      //메뉴 패널
-      initMenuPanel();
+
       //컨텐츠 패널
-      initContentPanel();
+    initContentPanel();
+      //메뉴 패널
+    createMenuPanel();
 
       frame.setVisible(true);
     }
@@ -60,18 +60,14 @@ public class TodoList {
   }
 
 
-  public void initMenuPanel() {
+  public void createMenuPanel() {
     menuPanel = new JPanel();
     backgroundPanel.add(menuPanel, BorderLayout.NORTH);
 
-    textField = new JTextField(10);
+    manageAddTodoSection = new ManageAddTodoSection(menuPanel,contentPanel,task);
 
-    JLabel todoLabel = new JLabel("할 일");
-    menuPanel.add(todoLabel);
 
-    menuPanel.add(textField);
 
-    createAddButton();
   }
 
   public void initContentPanel() {
@@ -81,18 +77,7 @@ public class TodoList {
 
   }
 
-  private void createAddButton() {
-    JButton addButton = new JButton("추가");
-    menuPanel.add(addButton);
-    addButton.addActionListener(event -> {
 
-      JPanel listPanel = new ListPanel(task,taskRepository);
-      contentPanel.setBackground(Color.DARK_GRAY);
 
-      contentPanel.add(listPanel);
-      contentPanel.setVisible(false);
-      contentPanel.setVisible(true);
-      frame.setVisible(true);
-    });
-  }
+
 }

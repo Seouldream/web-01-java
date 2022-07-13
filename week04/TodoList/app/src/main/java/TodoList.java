@@ -10,25 +10,38 @@
 //컨텐트 패널이 그리드레이아웃으로 되어야함. -> 세팅 완료
 
 //버튼 액션 리스너 정의
-//삭제버튼 구현
+//삭제버튼 구현 완료
+//텍스트 클릭시 체크 완료(? 구동한적없는데 아하 체크 박스가 자체 텍스트니까)
+//사용자는 프로그램을 종료했다가 실해시켜도 이전 저장..불러올수있다
+//1.csv 에서 파일을 한줄씩 일어온다
+//2.파싱을 할필요가없네 암튼 가져온걸 한줄씩 넣어준다 -> 리스트 개념필요 todos or tasks
+//3.어떻게 넣을거냐 ? 체크박스에  있는 텍스트들을 리스트화 시킨다
+//어떻게 가져올거냐? 한줄씩 읽어온 리스트들이 패널을 구성하게 만든다 1번
+
+//정리 -> 임의로 csv 파일에 할일을 입력후 가져오는 기능 먼저 구현 1.-> 완료
+// 버튼으로 추가 삭제 되는지 , 가져온 텍스트들을 버튼패널로 만들기
 
 
-
+import models.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.*;
+import java.util.*;
+import java.util.List;
 
 public class TodoList {
   private JFrame frame;
   private JPanel backgroundPanel;
   private JPanel contentPanel;
 
-  public static void main(String[] args) {
+
+  public static void main(String[] args) throws FileNotFoundException {
     TodoList application = new TodoList();
     application.run();
   }
 
-  public void run() {
+  public void run() throws FileNotFoundException {
     createMainFrame();
 
     createTitleLabel();
@@ -37,11 +50,40 @@ public class TodoList {
 
     createMenuPanel();
 
+
     createContentPanel();
 
+    List<Task> tasks = loadTasks();
+
+    updateTodos(tasks);
 
 
     frame.setVisible(true);
+  }
+
+  private void updateTodos(List<Task> tasks) {
+    for(Task task : tasks) {
+      createIndividualTodoPanel(task);
+    }
+  }
+
+  public List<Task> loadTasks() throws FileNotFoundException {
+    List<Task> tasks = new ArrayList<>();
+
+    File file = new File("input.csv");
+
+    Scanner scanner = new Scanner(file);
+
+    while (scanner.hasNextLine()) {
+
+      String line = scanner.nextLine();
+
+      Task task = new Task(line);
+
+      tasks.add(task);
+
+    }
+    return tasks;
   }
 
   private void createContentPanel() {
@@ -91,7 +133,7 @@ public class TodoList {
     });
   }
 
-  private void createIndividualTodoPanel(JTextField textField) {
+  public void createIndividualTodoPanel(JTextField textField) {
     JPanel individualTodoPanel = new JPanel();
 
     JCheckBox checkBox = new JCheckBox(textField.getText());
@@ -106,9 +148,29 @@ public class TodoList {
 
     individualTodoPanel.add(deleteButton);
 
+    contentPanel.add(individualTodoPanel);
+    contentPanel.setVisible(false);
+    contentPanel.setVisible(true);
+  }
+
+  public void createIndividualTodoPanel(Task task) {
+    JPanel individualTodoPanel = new JPanel();
+
+    JCheckBox checkBox = new JCheckBox(task.task());
+    individualTodoPanel.add(checkBox);
+
+    JButton deleteButton = new JButton("  X  ");
+    deleteButton.addActionListener(event-> {
+      contentPanel.remove(individualTodoPanel);
+      contentPanel.setVisible(false);
+      contentPanel.setVisible(true);
+    });
+
+    individualTodoPanel.add(deleteButton);
 
     contentPanel.add(individualTodoPanel);
     contentPanel.setVisible(false);
     contentPanel.setVisible(true);
   }
+
 }

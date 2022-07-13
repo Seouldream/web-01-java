@@ -19,10 +19,15 @@
 //어떻게 가져올거냐? 한줄씩 읽어온 리스트들이 패널을 구성하게 만든다 1번
 
 //정리 -> 임의로 csv 파일에 할일을 입력후 가져오는 기능 먼저 구현 1.-> 완료
-// 버튼으로 추가 삭제 되는지 , 가져온 텍스트들을 버튼패널로 만들기
+// 버튼으로 추가 삭제 되는지 , 가져온 텍스트들을 버튼패널로 만들기 -> 기존 버튼 추가와 가져온파일은
+// 혼선도 많고 처리해야할 변수도 많아서 일단은 따로 분리시킴(빠른 결과물을 낼 수 있음)
+
+//다음스텝 쓴 기록 가져와 파일로 만들기
+//파일라이터 준비
 
 
 import models.*;
+import org.checkerframework.checker.units.qual.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -34,14 +39,15 @@ public class TodoList {
   private JFrame frame;
   private JPanel backgroundPanel;
   private JPanel contentPanel;
+  private static List<Task> tasksForSaving = new ArrayList<>();
 
 
-  public static void main(String[] args) throws FileNotFoundException {
+  public static void main(String[] args) throws IOException {
     TodoList application = new TodoList();
     application.run();
   }
 
-  public void run() throws FileNotFoundException {
+  public void run() throws IOException {
     createMainFrame();
 
     createTitleLabel();
@@ -50,18 +56,30 @@ public class TodoList {
 
     createMenuPanel();
 
-
     createContentPanel();
 
     List<Task> tasks = loadTasks();
 
-    updateTodos(tasks);
-
+    uploadTasks(tasks);
 
     frame.setVisible(true);
+
+    SaveFile saveFile = new SaveFile();
   }
 
-  private void updateTodos(List<Task> tasks) {
+  /*public List<Task> saveTodosAsFile() throws IOException {
+
+    FileWriter fileWriter = new FileWriter("output.csv");
+
+    for(Task task : tasksForSaving) {
+      String line = task.task();
+      fileWriter.write(line + "\n");
+    }
+
+    fileWriter.close();
+  }*/
+
+  private void uploadTasks(List<Task> tasks) {
     for(Task task : tasks) {
       createIndividualTodoPanel(task);
     }
@@ -134,6 +152,9 @@ public class TodoList {
   }
 
   public void createIndividualTodoPanel(JTextField textField) {
+
+    tasksForSaving.add(new Task(textField.getText()));
+
     JPanel individualTodoPanel = new JPanel();
 
     JCheckBox checkBox = new JCheckBox(textField.getText());
@@ -144,6 +165,8 @@ public class TodoList {
       contentPanel.remove(individualTodoPanel);
       contentPanel.setVisible(false);
       contentPanel.setVisible(true);
+      //해당되는 '그' 것을 지워라 과연될까 ?
+      tasksForSaving.remove(new Task(textField.getText()));
     });
 
     individualTodoPanel.add(deleteButton);
@@ -154,6 +177,9 @@ public class TodoList {
   }
 
   public void createIndividualTodoPanel(Task task) {
+
+    tasksForSaving.add(new Task(task.task()));
+
     JPanel individualTodoPanel = new JPanel();
 
     JCheckBox checkBox = new JCheckBox(task.task());
@@ -161,9 +187,11 @@ public class TodoList {
 
     JButton deleteButton = new JButton("  X  ");
     deleteButton.addActionListener(event-> {
+
       contentPanel.remove(individualTodoPanel);
       contentPanel.setVisible(false);
       contentPanel.setVisible(true);
+      tasksForSaving.remove(new Task(task.task()));
     });
 
     individualTodoPanel.add(deleteButton);

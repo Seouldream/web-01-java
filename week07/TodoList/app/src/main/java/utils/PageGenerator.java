@@ -1,26 +1,20 @@
 package utils;
 
-public class PageGenerator {
+public abstract class PageGenerator {
   public String html() {
-    return "<!DOCTYPE html>" +
-           "<html>" +
-           "<head>" +
-            "<meta charset=\"UTF-8\">" +
-            "<title>Todo List</title>" +
-            "</head>" +
-            "<body>" +
+    return "<!DOCTYPE html>\n" +
+           "<html>\n" +
+           "<head>\n" +
+            "<meta charset=\"UTF-8\">\n" +
+            "<title>Todo List</title>\n" +
+            "</head>\n" +
+            "<body>\n" +
              content() +
-            "</body>" +
+            "</body>\n" +
             "<html>";
 
   }
 
-  public String content() {
-    return "<h1>Todo List<h1>" +
-          "<form method=\"POST\">" +
-         "<label for=\"things\">할 일:</label>" +
-          "<input type=\"text\" name=\"task\">" +
-          "<button type=\"submit\">확인</button>" +
-          "</form>";
-  }
+  public abstract String content();
+
 }

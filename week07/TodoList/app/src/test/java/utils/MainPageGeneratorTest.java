@@ -4,10 +4,10 @@ import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class PageGeneratorTest {
+class MainPageGeneratorTest {
   @Test
   void contents() {
-    PageGenerator pageGenerator = new PageGenerator();
+    PageGenerator pageGenerator = new MainPageGenerator();
     String html = pageGenerator.content();
     assertTrue(html.contains("Todo List"),"제목 문제" + html);
     assertTrue(html.contains("할 일:"),"할일 레이블 문제" + html);

@@ -1,6 +1,7 @@
 import com.sun.net.httpserver.*;
 
 import models.*;
+import org.checkerframework.checker.units.qual.*;
 import pages.*;
 import repository.*;
 import utils.*;
@@ -12,29 +13,21 @@ import java.util.*;
 public class LoginRegister {
   private final FormParser formParser;
   private final AccountRepository accountRepository;
+  private  AccountsLoader accountsLoader;
 
   public static void main(String[] args) throws IOException {
     LoginRegister application = new LoginRegister();
     application.run();
   }
 
-  public LoginRegister() {
-
+  public LoginRegister() throws IOException {
 
     formParser = new FormParser();
     accountRepository = new AccountRepository();
+    accountsLoader = new AccountsLoader();
   }
 
   private void run() throws IOException {
-
-    File file = new File("accountList.csv");
-
-    Scanner scanner = new Scanner(file);
-    while(scanner.hasNextLine()) {
-      String[] accountInfo = scanner.nextLine().split("::");
-    }
-
-    for()
 
     InetSocketAddress address = new InetSocketAddress(8000);
     HttpServer httpServer = HttpServer.create(address, 0);
@@ -59,9 +52,11 @@ public class LoginRegister {
 
     System.out.println("http://localhost:8000");
     httpServer.start();
+
+
   }
 
-  private PageGenerator process(String path, String method, Map<String, String> formData) {
+  private PageGenerator process(String path, String method, Map<String, String> formData) throws IOException {
     return switch (path) {
       case "/login" -> processLogin(method, formData);
       case "/createAccount" -> processCreateAccount(method, formData);
@@ -77,7 +72,7 @@ public class LoginRegister {
   }
 
   private PageGenerator processLoginPost(Map<String, String> formData) {
-    Account account = accountRepository.find(formData.get("identifier"), "1234");
+    Account account = accountRepository.find(formData.get("identifier"), "test");
     if (!formData.get("identifier").equals(account.identifier())) {
       return new DoubleCheckIdentifierPageGenerator();
     }
@@ -87,11 +82,10 @@ public class LoginRegister {
     return new SignedInPageGenerator(account);
   }
 
-  private PageGenerator processCreateAccount(String method, Map<String, String> formData) {
+  private PageGenerator processCreateAccount(String method, Map<String, String> formData) throws IOException {
     if (method.equals("GET")) {
       return processCreateAccountGet();
     }
-    System.out.println("빈값체크: " + formData.get("email"));
 
     return processCreateAccountPost(formData);
   }
@@ -100,7 +94,7 @@ public class LoginRegister {
     return new CreateAccountPageGenerator();
   }
 
-  private PageGenerator processCreateAccountPost(Map<String, String> formData) {
+  private PageGenerator processCreateAccountPost(Map<String, String> formData) throws IOException {
 
     AccountTester accountTester = new AccountTester(accountRepository);
 
@@ -116,10 +110,12 @@ public class LoginRegister {
         formData.get("email") == null) {
       return new EmptyContentFailPageGenerator();
     }
+
     accountRepository.accounts().put(formData.get("identifier"),
         new Account(
             formData.get("identifier"), formData.get("password"), formData.get("name"))
     );
+    accountsLoader.save(accountRepository.accounts());
     return new CreateAccountSuccessPageGenerator();
   }
 }

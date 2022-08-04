@@ -2,20 +2,19 @@ package repository;
 
 import models.*;
 import org.checkerframework.checker.units.qual.*;
+import utils.*;
 
+import java.io.*;
 import java.util.*;
 import java.util.stream.*;
 
 public class AccountRepository extends java.awt.List {
-  private final Map<String, Account> accounts = new HashMap<>();
+  private final Map<String, Account> accounts;
 
-  public AccountRepository() {
-    Arrays.stream()(
-        new Account("1234", "1234", "ashal"),
-        new Account("2345", "2345", "joker")
-    ).forEach(account -> {
-      accounts.put(account.identifier(), account);
-    });
+  public AccountRepository() throws IOException {
+    AccountsLoader accountsLoader = new AccountsLoader();
+    accounts = accountsLoader.load();
+
   }
 
   public Account find(String identifier) {

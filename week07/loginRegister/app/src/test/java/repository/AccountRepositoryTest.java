@@ -3,13 +3,14 @@ package repository;
 import models.*;
 import org.junit.jupiter.api.*;
 
+import java.io.*;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class AccountRepositoryTest {
   @Test
-  void find() {
+  void find() throws IOException {
     AccountRepository accountRepository = new AccountRepository();
     List<Account> accounts = List.of(
         new Account("1234", "1234", "ashal")
@@ -21,7 +22,7 @@ class AccountRepositoryTest {
   }
 
   @Test
-  void accounts() {
+  void accounts() throws IOException {
     AccountRepository accountRepository = new AccountRepository();
 
     assertEquals(2, accountRepository.accounts().size());
@@ -32,7 +33,7 @@ class AccountRepositoryTest {
   }
 
   @Test
-  void notFound() {
+  void notFound() throws IOException {
     AccountRepository accountRepository = new AccountRepository();
 
     assertEquals(2, accountRepository.accounts().size());

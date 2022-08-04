@@ -4,13 +4,14 @@ import models.*;
 import org.junit.jupiter.api.*;
 import repository.*;
 
+import java.io.*;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class AccountTesterTest {
   @Test
-  void duplicateID() {
+  void duplicateID() throws IOException {
     AccountRepository accountRepository = new AccountRepository();
 
     String id1 = "1234";
@@ -27,7 +28,7 @@ class AccountTesterTest {
   }
 
   @Test
-  void mismatchPassword() {
+  void mismatchPassword() throws IOException {
     AccountRepository accountRepository = new AccountRepository();
     List<Account> accounts = new ArrayList<>();
     accounts.add(new Account("1234","abc","ashal"));
@@ -46,7 +47,7 @@ class AccountTesterTest {
   }
 
   @Test
-  void emptyForm() {
+  void emptyForm() throws IOException {
     AccountRepository accountRepository = new AccountRepository();
     List<Account> accounts = new ArrayList<>();
     accounts.add(new Account("1234","abc","ashal"));

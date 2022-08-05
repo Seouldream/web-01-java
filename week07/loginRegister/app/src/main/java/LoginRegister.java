@@ -1,9 +1,9 @@
 import com.sun.net.httpserver.*;
 
 import models.*;
-import org.checkerframework.checker.units.qual.*;
 import pages.*;
 import repository.*;
+import services.*;
 import utils.*;
 
 import java.io.*;
@@ -12,8 +12,8 @@ import java.util.*;
 
 public class LoginRegister {
   private final FormParser formParser;
-  private final AccountRepository accountRepository;
-  private  AccountsLoader accountsLoader;
+  private final UsersRepository usersRepository;
+  private UsersLoader usersLoader;
 
   public static void main(String[] args) throws IOException {
     LoginRegister application = new LoginRegister();
@@ -23,8 +23,8 @@ public class LoginRegister {
   public LoginRegister() throws IOException {
 
     formParser = new FormParser();
-    accountRepository = new AccountRepository();
-    accountsLoader = new AccountsLoader();
+    usersRepository = new UsersRepository();
+    usersLoader = new UsersLoader();
   }
 
   private void run() throws IOException {
@@ -38,7 +38,7 @@ public class LoginRegister {
       String method = exchange.getRequestMethod();
 
       String requestBody = new RequestBodyReader(exchange).body();
-      System.out.println(requestBody);
+
       Map<String, String> formData = formParser.parse(requestBody);
 
       PageGenerator pageGenerator = process(path, method, formData);
@@ -59,7 +59,7 @@ public class LoginRegister {
   private PageGenerator process(String path, String method, Map<String, String> formData) throws IOException {
     return switch (path) {
       case "/login" -> processLogin(method, formData);
-      case "/createAccount" -> processCreateAccount(method, formData);
+      case "/createUser" -> processCreateUser(method, formData);
       default -> new FrontPageGenerator();
     };
   }
@@ -72,50 +72,57 @@ public class LoginRegister {
   }
 
   private PageGenerator processLoginPost(Map<String, String> formData) {
-    Account account = accountRepository.find(formData.get("identifier"), "test");
-    if (!formData.get("identifier").equals(account.identifier())) {
+    LoginTester loginTester = new LoginTester(usersRepository,formData);
+
+    if (!loginTester.UserIdTester()) {
       return new DoubleCheckIdentifierPageGenerator();
     }
-    if (!formData.get("password").equals(account.password())) {
+    if (!loginTester.UserPasswordTester()) {
       return new PasswordMismatchFailPageGenerator();
     }
-    return new SignedInPageGenerator(account);
+    User user = usersRepository.find(formData.get("identifier"), "test");
+    return new SignedInPageGenerator(user);
   }
 
-  private PageGenerator processCreateAccount(String method, Map<String, String> formData) throws IOException {
+  private PageGenerator processCreateUser(String method, Map<String, String> formData) throws IOException {
     if (method.equals("GET")) {
-      return processCreateAccountGet();
+      return processCreateUserGet();
     }
 
-    return processCreateAccountPost(formData);
+    return processCreateUserPost(formData);
   }
 
-  private CreateAccountPageGenerator processCreateAccountGet() {
-    return new CreateAccountPageGenerator();
+  private CreateUserPageGenerator processCreateUserGet() {
+    return new CreateUserPageGenerator();
   }
 
-  private PageGenerator processCreateAccountPost(Map<String, String> formData) throws IOException {
+  private PageGenerator processCreateUserPost(Map<String, String> formData) throws IOException {
 
-    AccountTester accountTester = new AccountTester(accountRepository);
+    UserCreationTester userCreationTester = new UserCreationTester(usersRepository);
 
-    if (!accountTester.identifierTester(formData.get("identifier"))) {
-      return new DuplicateIdentifierFailPageGenerator();
-    }
-    if (!accountTester.passwordTester(formData.get("password"),
-        formData.get("passwordDoubleCheck"))) {
-      return new PasswordMismatchFailPageGenerator();
-    }
-    if (formData.get("identifier") == null || formData.get("password") == null ||
-        formData.get("name") == null || formData.get("passwordDoubleCheck") == null ||
-        formData.get("email") == null) {
+    if (!userCreationTester.emptyTester(formData.get("identifier"),
+        formData.get("password"),
+        formData.get("passwordDoubleCheck"),
+        formData.get("name"),
+        formData.get("email"))) {
       return new EmptyContentFailPageGenerator();
     }
 
-    accountRepository.accounts().put(formData.get("identifier"),
-        new Account(
-            formData.get("identifier"), formData.get("password"), formData.get("name"))
+    if (!userCreationTester.passwordTester(formData.get("password"),
+        formData.get("passwordDoubleCheck"))) {
+      return new PasswordMismatchFailPageGenerator();
+    }
+
+    if (!userCreationTester.identifierTester(formData.get("identifier"))) {
+      return new DuplicateIdentifierFailPageGenerator();
+    }
+
+    usersRepository.users().put(formData.get("identifier"),
+        new User(formData.get("identifier"),
+            formData.get("password"),
+            formData.get("name"))
     );
-    accountsLoader.save(accountRepository.accounts());
-    return new CreateAccountSuccessPageGenerator();
+    usersLoader.save(usersRepository.users());
+    return new CreateUserSuccessPageGenerator();
   }
 }

@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class SignedInPageGeneratorTest {
   @Test
   void SignedContent() {
-    PageGenerator pageGenerator = new SignedInPageGenerator(new Account("극대노승준","1234","노승준"));
+    PageGenerator pageGenerator = new SignedInPageGenerator(new User("극대노승준","1234","노승준"));
     String content = pageGenerator.content();
 
     assertTrue(content.contains("<h1>마카오뱅크</h1>"),"제목 문제" + content);
@@ -17,9 +17,9 @@ class SignedInPageGeneratorTest {
 
   @Test
   void nameMessage() {
-    Account noseungJun;
+    User noseungJun;
     PageGenerator pageGenerator = new SignedInPageGenerator(noseungJun =
-        new Account("극대노승준","1234","노승준"));
+        new User("극대노승준","1234","노승준"));
     String content = pageGenerator.content();
 
     assertEquals("노승준",noseungJun.name());

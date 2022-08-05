@@ -3,9 +3,9 @@ package pages;
 import models.*;
 
 public class SignedInPageGenerator extends PageGenerator {
-  private Account account;
+  private User account;
 
-  public SignedInPageGenerator(Account account) {
+  public SignedInPageGenerator(User account) {
 
     this.account = account;
   }

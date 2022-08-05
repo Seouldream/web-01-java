@@ -1,6 +1,6 @@
 package pages;
 
-public class CreateAccountPageGenerator extends PageGenerator {
+public class CreateUserPageGenerator extends PageGenerator {
   @Override
   public String content() {
     return "<form method=\"POST\" enctype=\"text/plain\">\n" +

@@ -1,6 +1,6 @@
 package pages;
 
-public class CreateAccountSuccessPageGenerator extends PageGenerator{
+public class CreateUserSuccessPageGenerator extends PageGenerator{
   @Override
   public String content() {
     return "<p><h1>회원가입이 완료되었습니다.</p>\n" +

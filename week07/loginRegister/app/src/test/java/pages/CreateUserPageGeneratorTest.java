@@ -4,10 +4,10 @@ import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class CreateAccountPageGeneratorTest {
+class CreateUserPageGeneratorTest {
   @Test
   void creation() {
-    PageGenerator pageGenerator = new CreateAccountPageGenerator();
+    PageGenerator pageGenerator = new CreateUserPageGenerator();
     String html = pageGenerator.html();
     assertTrue(html.contains("이름"), "이름 확인 문제" + html);
     assertTrue(html.contains("아이디"), "아이디 확인 문제" + html);

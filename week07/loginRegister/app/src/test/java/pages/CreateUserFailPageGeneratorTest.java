@@ -1,17 +1,14 @@
 package pages;
 
-import models.*;
 import org.junit.jupiter.api.*;
-
-import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class CreateAccountFailPageGeneratorTest {
+class CreateUserFailPageGeneratorTest {
   @Test
   void duplicateID() {
 
-    PageGenerator pageGenerator = new CreateAccountSuccessPageGenerator();
+    PageGenerator pageGenerator = new CreateUserSuccessPageGenerator();
     String content = pageGenerator.content();
 
     assertTrue(content.contains("회원가입이 완료되었습니다."),"아이디 등록 메세지 문제" + content);
